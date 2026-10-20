@@ -196,3 +196,51 @@ Workers loop on `!isInterrupted()` and re-set the flag after
 |---|---|---|---|---|
 | OrderedBank | 800000 | – | 4000 | ___ ms |
 | TryLockBank | 800000 | ___ | 4000 | ___ ms |
+
+
+
+# Parallel Word-Frequency Analyser
+
+Scans a directory of text files in parallel and reports the most frequent words.
+JDK 21+, no external libraries (JUnit 6 for tests only).
+
+## Run
+    javac -d out src\main\java\edu\itc\se\lab01\challenge\*.java
+    java -cp out edu.itc.se.lab01.challenge.DataGenerator data
+    java -cp out edu.itc.se.lab01.challenge.WordCount data --top 10 --timeout 30
+
+Options: `--top N`, `--timeout SECONDS`, `--virtual`, `--workers N`.
+Output: console table and `result.csv`. Compile the main classes with the
+command above; `WordCountTest` is under `src\test\java` and requires JUnit.
+
+## Design
+`scanner` → `ArrayBlockingQueue<Path>(16)` → N workers → `ConcurrentHashMap<String, LongAdder>`.
+A reporter prints progress every 500 ms. Ctrl+C and `--timeout` call the same
+`shutdown()`, which interrupts all threads, waits at most 2 s and prints a
+`[PARTIAL]` result.
+
+## Scaling (200 files x 50 000 words)
+Generate with `java -cp out edu.itc.se.lab01.challenge.Benchmark data`.
+
+| Workers | Elapsed (ms) | Speedup |
+|---|---|---|
+| 1 platform | ___ | x1.00 |
+| 2 platform | ___ | ___ |
+| 4 platform | ___ | ___ |
+| 8 platform | ___ | ___ |
+| virtual | ___ | ___ |
+
+The work is CPU-bound, so virtual threads should match platform threads.
+
+## Why LongAdder beats synchronized
+A lock around the map lets one thread update at a time, and most increments hit
+the same few hot words. `ConcurrentHashMap.get` is lock-free and `LongAdder`
+spreads increments across per-thread cells, summed only when read. Workers
+rarely block, and the reporter reads counters without stopping them.
+
+## Coffman conditions
+The design rules out **hold-and-wait** and **circular wait**: no thread holds
+one lock while requesting another, and data flows one way (scanner → queue →
+workers). Waiting is also abandonable: `put`, `take` and `sleep` respond to
+`interrupt()`, so shutdown never waits on a stuck thread. Mutual exclusion
+remains (queue slots), but it alone cannot cause a deadlock.

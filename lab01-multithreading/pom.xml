@@ -9,20 +9,20 @@
   <version>1.0-SNAPSHOT</version>
 
   <name>lab01-multithreading</name>
-  <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
+    <!-- CHANGED: was source/target 1.7 -->
+    <maven.compiler.release>21</maven.compiler.release>
   </properties>
 
   <dependencies>
+    <!-- CHANGED: JUnit 4.11 replaced by JUnit 6 (Jupiter) -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>6.1.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -40,13 +40,15 @@
           <artifactId>maven-resources-plugin</artifactId>
           <version>3.0.2</version>
         </plugin>
+        <!-- CHANGED: 3.8.0 -> 3.13.0 -->
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
+          <version>3.13.0</version>
         </plugin>
+        <!-- CHANGED: 2.22.1 -> 3.5.4 (needed for JUnit 6) -->
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
+          <version>3.5.4</version>
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
