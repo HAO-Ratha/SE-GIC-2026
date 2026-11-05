@@ -15,6 +15,7 @@
 	<description>Shop: orders, transactions, audit aspect</description>
 	<properties>
 		<java.version>21</java.version>
+		
 	</properties>
 	<dependencies>
 		<dependency>

@@ -2,7 +2,7 @@
 package edu.itc.shop.repository;
 
 import edu.itc.shop.domain.Product;
-import org.springframework.dao.DuplicateKeyException;
+// import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
