@@ -12,13 +12,6 @@ public class AppConfig {
     public Clock clock() {
         return Clock.systemDefaultZone();
     }
-
-    @Bean
-    @Scope("prototype")
-    public ReportBuilder reportBuilder() {
-        return new ReportBuilder();
-    }
-
     public static class ReportBuilder {
     }
 }
