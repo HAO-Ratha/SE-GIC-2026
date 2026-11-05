@@ -1,0 +1,1 @@
+what does the <parent> give you? Why do the starters have no <version>? What does spring-boot-maven-plugin do at package time? 
