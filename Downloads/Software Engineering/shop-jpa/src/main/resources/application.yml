@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: shop-jpa
+  datasource:
+    url: jdbc:h2:mem:shopdb;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  flyway:
+    enabled: true
+    url: jdbc:h2:mem:shopdb
+    user: sa
+    password:
