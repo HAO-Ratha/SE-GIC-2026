@@ -9,10 +9,11 @@ import org.hibernate.Hibernate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import edu.itc.se.shop_jpa.domain.Address;
 import edu.itc.se.shop_jpa.domain.Category;
 import edu.itc.se.shop_jpa.domain.Customer;
 import edu.itc.se.shop_jpa.domain.Money;
@@ -25,18 +26,23 @@ import jakarta.persistence.EntityManager;
 @DataJpaTest
 class OrderRepositoryTest {
 
-    @Autowired OrderRepository orders;
-    @Autowired ProductRepository products;
-    @Autowired CustomerRepository customers;
-    @Autowired EntityManager em;
+    @Autowired
+    OrderRepository orders;
+    @Autowired
+    ProductRepository products;
+    @Autowired
+    CustomerRepository customers;
+    @Autowired
+    EntityManager em;
 
     Customer ada;
 
     @BeforeEach
     void setUp() {
-        ada = customers.save(new Customer("Ada Lovelace", "ada@itc.edu"));
+        Address address = new Address("1 Main St", "London", "N1");
+        ada = customers.save(new Customer("Ada Lovelace", "ada@itc.edu", address, address));
         Product kb = products.save(new Product("KB-1", "Keyboard",
-                new Money(new BigDecimal("40")), 2, Category.HARDWARE));
+                new Money(new BigDecimal("40"), "EUR"), Category.HARDWARE, 2));
 
         Order o1 = new Order(ada, OrderStatus.PAID, Instant.parse("2026-09-01T10:00:00Z"));
         o1.addLine(kb, 1);
@@ -59,7 +65,7 @@ class OrderRepositoryTest {
     @Test
     void fetchJoin_initializesLines_plainFindByIdDoesNot() {
         var fetched = orders.findWithLinesByCustomerEmail("ada@itc.edu");
-        assertThat(fetched).hasSize(2);   // distinct removes duplicates
+        assertThat(fetched).hasSize(2); // distinct removes duplicates
         assertThat(Hibernate.isInitialized(fetched.get(0).getLines())).isTrue();
 
         Long id = fetched.get(0).getId();
