@@ -9,11 +9,37 @@ spring:
     open-in-view: false
     properties:
       hibernate:
-        generate_statistics: true
+        '[generate_statistics]': true
   h2:
     console:
-      enabled: true               # http://localhost:8080/h2-console
+      enabled: true
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+
+shop:
+  currency: "EUR"
+  tax-rate: 0.20
+  low-stock-threshold: 5
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,loggers
+  endpoint:
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: "@project.artifactId@"
+    version: "@project.version@"
+
 logging:
-  level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.orm.jdbc.bind: TRACE
+  pattern:
+    console: "%d{HH:mm:ss.SSS} %-5level [%X{requestId}] %logger{36} : %msg%n"
