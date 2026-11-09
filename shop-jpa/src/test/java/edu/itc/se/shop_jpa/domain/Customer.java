@@ -1,4 +1,4 @@
-package edu.itc.shop.domain;
+package edu.itc.se.shop_jpa.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

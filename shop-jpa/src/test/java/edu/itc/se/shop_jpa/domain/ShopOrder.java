@@ -1,9 +1,20 @@
-package edu.itc.shop.domain;
+package edu.itc.se.shop_jpa.domain;
 
-import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "orders")
@@ -33,13 +44,6 @@ public class ShopOrder {
         this.placedAt = Instant.now();
     }
 
-    public Long getId() { return id; }
-    public Customer getCustomer() { return customer; }
-    public OrderStatus getStatus() { return status; }
-    public Instant getPlacedAt() { return placedAt; }
-    public List<OrderLine> getLines() { return lines; }
-
-    // Task 2 methods
     public void addLine(Product p, int qty) {
         OrderLine line = new OrderLine(p, qty);
         line.setOrder(this);
@@ -50,4 +54,10 @@ public class ShopOrder {
         this.lines.remove(line);
         line.setOrder(null);
     }
+    
+    public Long getId() { return id; }
+    public Customer getCustomer() { return customer; }
+    public OrderStatus getStatus() { return status; }
+    public Instant getPlacedAt() { return placedAt; }
+    public List<OrderLine> getLines() { return lines; }
 }

@@ -1,6 +1,11 @@
-package edu.itc.shop.domain;
+package edu.itc.se.shop_jpa.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class OrderLine {
@@ -29,5 +34,4 @@ public class OrderLine {
     public Product getProduct() { return product; }
     public int getQuantity() { return quantity; }
     public void setOrder(ShopOrder order) { this.order = order; }
-    public void setQuantity(int quantity) { this.quantity = quantity; }
 }
