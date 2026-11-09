@@ -47,5 +47,9 @@ public class Order {
     public long getVersion() { return version; }
     public List<OrderLine> getLines() { return lines; }
 
+    public void addLine(Product product, int quantity) {
+        lines.add(new OrderLine(this, product, quantity, product.getPrice()));
+    }
+
     public void setStatus(OrderStatus status) { this.status = status; }
 }
