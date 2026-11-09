@@ -1,8 +1,10 @@
 package edu.itc.se.shop_jpa.service;
 
 import edu.itc.se.shop_jpa.domain.Order;
-import edu.itc.se.shop_jpa.domain.Customer;
+import edu.itc.se.shop_jpa.domain.OrderStatus;
+import edu.itc.se.shop_jpa.domain.Product;
 import edu.itc.se.shop_jpa.repository.OrderRepository;
+import edu.itc.se.shop_jpa.repository.ProductRepository;
 
 import jakarta.persistence.EntityManagerFactory;
 
@@ -24,6 +26,9 @@ class OrderServiceTest {
 
     @Autowired
     OrderRepository orders;
+
+    @Autowired
+    ProductRepository products;
 
     @Autowired
     EntityManagerFactory emf;
@@ -53,35 +58,36 @@ class OrderServiceTest {
 
         assertThat(stats.getEntityUpdateCount())
                 .isEqualTo(1);
-
     }
+
+    @Test
     void detachedEntityNeedsSave() {
 
-    Long id = data.newProduct();
+        Long id = data.newProduct();
 
-    // Load product outside a surrounding transaction
-    Product p = products.findById(id)
-            .orElseThrow();
+        // Load product outside a surrounding transaction
+        Product p = products.findById(id)
+                .orElseThrow();
 
-    // Change Java object
-    p.setStock(99);
+        // Change Java object
+        p.setStock(99);
 
-    // Reload from database
-    Product unchanged = products.findById(id)
-            .orElseThrow();
+        // Reload from database
+        Product unchanged = products.findById(id)
+                .orElseThrow();
 
-    // Database still has original stock
-    assertThat(unchanged.getStock())
-            .isNotEqualTo(99);
+        // Database still has original stock
+        assertThat(unchanged.getStock())
+                .isNotEqualTo(99);
 
-    // Merge detached entity
-    products.save(p);
+        // Merge detached entity
+        products.save(p);
 
-    // Reload again
-    Product updated = products.findById(id)
-            .orElseThrow();
+        // Reload again
+        Product updated = products.findById(id)
+                .orElseThrow();
 
-    assertThat(updated.getStock())
-            .isEqualTo(99);
+        assertThat(updated.getStock())
+                .isEqualTo(99);
+    }
 }
-
