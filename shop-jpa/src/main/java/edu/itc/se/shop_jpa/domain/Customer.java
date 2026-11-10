@@ -1,50 +1,34 @@
 package edu.itc.se.shop_jpa.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
-@Table(name = "customer")
 public class Customer {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customer_seq")
-    @SequenceGenerator(name = "customer_seq", sequenceName = "customer_seq", allocationSize = 50)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @NotBlank
     private String name;
 
-    @Column(nullable = false, unique = true, length = 100)
+    @Email
+    @Column(nullable = false, unique = true)
     private String email;
-
-    @Embedded
-    private Address billing;
-
-    @Embedded
-    @AttributeOverrides({
-        @AttributeOverride(name = "street", column = @Column(name = "ship_street", nullable = false)),
-        @AttributeOverride(name = "city", column = @Column(name = "ship_city", nullable = false, length = 100)),
-        @AttributeOverride(name = "zip", column = @Column(name = "ship_zip", nullable = false, length = 10))
-    })
-    private Address shipping;
 
     protected Customer() {}
 
-    public Customer(String name, String email, Address billing, Address shipping) {
+    public Customer(String name, String email) {
         this.name = name;
         this.email = email;
-        this.billing = billing;
-        this.shipping = shipping;
     }
 
     public Long getId() { return id; }
     public String getName() { return name; }
     public String getEmail() { return email; }
-    public Address getBilling() { return billing; }
-    public Address getShipping() { return shipping; }
-
-    public void setName(String name) { this.name = name; }
-    public void setEmail(String email) { this.email = email; }
-    public void setBilling(Address billing) { this.billing = billing; }
-    public void setShipping(Address shipping) { this.shipping = shipping; }
 }
