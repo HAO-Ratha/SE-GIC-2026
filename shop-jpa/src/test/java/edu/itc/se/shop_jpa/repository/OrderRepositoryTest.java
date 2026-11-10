@@ -40,7 +40,7 @@ class OrderRepositoryTest {
     @BeforeEach
     void setUp() {
         Address address = new Address("1 Main St", "London", "N1");
-        ada = customers.save(new Customer("Ada Lovelace", "ada@itc.edu", address, address));
+        ada = customers.save(new Customer("Ada Lovelace", "ada@itc.edu"));        
         Product kb = products.save(new Product("KB-1", "Keyboard",
                 new Money(new BigDecimal("40"), "EUR"), Category.HARDWARE, 2));
 
