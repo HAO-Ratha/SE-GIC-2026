@@ -3,11 +3,14 @@ package edu.itc.se.shop_jpa.service;
 import edu.itc.se.shop_jpa.domain.Order;
 import edu.itc.se.shop_jpa.domain.OrderStatus;
 import edu.itc.se.shop_jpa.repository.OrderRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.hibernate.Session;
 
 @Service
 @Transactional(readOnly = true)
@@ -15,11 +18,15 @@ public class ReportService {
 
     private final OrderRepository orders;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     public ReportService(OrderRepository orders) {
         this.orders = orders;
     }
 
     public Map<Long, Integer> linesPerPaidOrder() {
+        entityManager.unwrap(Session.class).setFetchBatchSize(1);
         Map<Long, Integer> result = new LinkedHashMap<>();
         for (Order order : orders.findByStatus(OrderStatus.PAID)) {
             result.put(order.getId(), order.getLines().size());
@@ -44,6 +51,7 @@ public class ReportService {
     }
 
     public Map<Long, Integer> linesPerPaidOrderBatched() {
+        entityManager.unwrap(Session.class).setFetchBatchSize(16);
         Map<Long, Integer> result = new LinkedHashMap<>();
         for (Order order : orders.findByStatus(OrderStatus.PAID)) {
             result.put(order.getId(), order.getLines().size());

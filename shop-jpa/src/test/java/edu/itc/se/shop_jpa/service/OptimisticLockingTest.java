@@ -2,10 +2,19 @@ package edu.itc.se.shop_jpa.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import edu.itc.se.shop_jpa.domain.Category;
+import edu.itc.se.shop_jpa.domain.Customer;
+import edu.itc.se.shop_jpa.domain.Money;
 import edu.itc.se.shop_jpa.domain.Order;
 import edu.itc.se.shop_jpa.domain.OrderStatus;
+import edu.itc.se.shop_jpa.domain.Product;
+import edu.itc.se.shop_jpa.repository.CustomerRepository;
 import edu.itc.se.shop_jpa.repository.OrderRepository;
+import edu.itc.se.shop_jpa.repository.ProductRepository;
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.function.Function;
@@ -20,6 +29,12 @@ class OptimisticLockingTest {
 
     @Autowired
     OrderRepository orders;
+
+    @Autowired
+    CustomerRepository customers;
+
+    @Autowired
+    ProductRepository products;
 
     @Autowired
     TransactionTemplate tx;
@@ -63,8 +78,18 @@ class OptimisticLockingTest {
     }
 
     private Long createOrder() {
-        // create a customer and one order, return id
-        return 1L;
+        Customer customer = customers.save(new Customer("Ada Lovelace", "ada-" + UUID.randomUUID() + "@itc.edu"));
+        Product product = products.save(new Product(
+                "SKU-OPT",
+                "OptLock Item",
+                new Money(new BigDecimal("10.00"), "EUR"),
+                Category.HARDWARE,
+                5
+        ));
+
+        Order order = new Order(customer, OrderStatus.NEW, Instant.now());
+        order.addLine(product, 1);
+        return orders.save(order).getId();
     }
 
     private static void await(CountDownLatch l) {

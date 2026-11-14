@@ -4,15 +4,18 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import java.time.Instant;
 import edu.itc.se.shop_jpa.domain.Order;
 import edu.itc.se.shop_jpa.domain.OrderStatus;
 import edu.itc.se.shop_jpa.web.dto.OrderSummary;
 
-public interface OrderRepository extends JpaRepository<Order, Long> {
+public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecificationExecutor<Order> {
 
     // Derived queries
     List<Order> findByCustomerEmailAndStatusOrderByPlacedAtDesc(String email, OrderStatus status);
@@ -23,6 +26,17 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     // Interface projection (only id, status, placedAt, customer.name are selected)
     Page<OrderSummary> findByStatus(OrderStatus status, Pageable pageable);
+
+    Slice<OrderSummary> findAllBy(Pageable pageable);
+
+    @Query("""
+            select o from Order o
+             where o.placedAt < :placedAt
+                or (o.placedAt = :placedAt and o.id < :id)
+             order by o.placedAt desc, o.id desc
+            """)
+    Slice<OrderSummary> findFeedAfter(
+            @Param("placedAt") Instant placedAt, @Param("id") Long id, Pageable pageable);
 
     @Query("""
         select distinct o from Order o

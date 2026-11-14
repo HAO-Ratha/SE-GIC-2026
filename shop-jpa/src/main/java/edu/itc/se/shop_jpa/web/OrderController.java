@@ -10,10 +10,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import edu.itc.se.shop_jpa.domain.OrderStatus;
 import edu.itc.se.shop_jpa.repository.OrderRepository;
 import edu.itc.se.shop_jpa.service.OrderService;
+import edu.itc.se.shop_jpa.service.OrderFeedService;
 import edu.itc.se.shop_jpa.web.dto.OrderSummary;
+import edu.itc.se.shop_jpa.web.dto.OrderFeedResponse;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -21,10 +25,12 @@ public class OrderController {
 
     private final OrderRepository orders;
     private final OrderService orderService;
+    private final OrderFeedService feedService;
 
-    public OrderController(OrderRepository orders, OrderService orderService) {
+    public OrderController(OrderRepository orders, OrderService orderService, OrderFeedService feedService) {
         this.orders = orders;
         this.orderService = orderService;
+        this.feedService = feedService;
     }
 
     @GetMapping
@@ -37,5 +43,25 @@ public class OrderController {
     @GetMapping("/{orderId}/line-names")
     public List<String> lineNames(@PathVariable Long orderId) {
         return orderService.getLineNames(orderId);
+    }
+
+    @GetMapping("/feed")
+    public OrderFeedResponse feed(@RequestParam(required = false) String after,
+                                  @RequestParam(defaultValue = "20") int size) {
+        try {
+            return feedService.slice(after, size);
+        } catch (IllegalArgumentException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+        }
+    }
+
+    @GetMapping("/feed/keyset")
+    public OrderFeedResponse keysetFeed(@RequestParam(required = false) String after,
+                                        @RequestParam(defaultValue = "20") int size) {
+        try {
+            return feedService.keyset(after, size);
+        } catch (IllegalArgumentException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+        }
     }
 }

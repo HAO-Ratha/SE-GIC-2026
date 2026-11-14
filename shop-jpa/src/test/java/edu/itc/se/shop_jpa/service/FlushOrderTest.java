@@ -4,11 +4,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import edu.itc.se.shop_jpa.domain.Tag;
 import edu.itc.se.shop_jpa.repository.TagRepository;
-import jakarta.persistence.PersistenceException;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @SpringBootTest
 class FlushOrderTest {
@@ -25,7 +25,7 @@ class FlushOrderTest {
             tags.delete(oldTag);
             tags.save(new Tag("sale"));
             tags.flush();
-        }).isInstanceOf(PersistenceException.class);
+        }).isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test

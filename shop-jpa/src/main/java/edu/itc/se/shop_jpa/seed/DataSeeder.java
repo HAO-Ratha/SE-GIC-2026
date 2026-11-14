@@ -22,6 +22,7 @@ import edu.itc.se.shop_jpa.domain.Tag;
 import edu.itc.se.shop_jpa.repository.CustomerRepository;
 import edu.itc.se.shop_jpa.repository.OrderRepository;
 import edu.itc.se.shop_jpa.repository.ProductRepository;
+import edu.itc.se.shop_jpa.repository.TagRepository;
 
 @Component
 @Profile("dev")
@@ -30,11 +31,17 @@ public class DataSeeder implements ApplicationRunner {
     private final CustomerRepository customers;
     private final ProductRepository products;
     private final OrderRepository orders;
+    private final TagRepository tags;
 
-    public DataSeeder(CustomerRepository customers, ProductRepository products, OrderRepository orders) {
+    public DataSeeder(
+            CustomerRepository customers,
+            ProductRepository products,
+            OrderRepository orders,
+            TagRepository tags) {
         this.customers = customers;
         this.products = products;
         this.orders = orders;
+        this.tags = tags;
     }
 
     @Override
@@ -50,7 +57,11 @@ public class DataSeeder implements ApplicationRunner {
             new Customer("Grace Hopper", "grace@itc.edu", new Address("2 Main St", "New York", "10001"), new Address("2 Main St", "New York", "10001")),
             new Customer("Alan Turing", "alan@itc.edu", new Address("3 Main St", "Manchester", "M1"), new Address("3 Main St", "Manchester", "M1"))));
 
-        Tag[] tagPool = { new Tag("wireless"), new Tag("gaming"), new Tag("office") };
+        List<Tag> savedTags = tags.saveAll(List.of(
+                new Tag("wireless"),
+                new Tag("gaming"),
+                new Tag("office")));
+        Tag[] tagPool = savedTags.toArray(Tag[]::new);
         Category[] cats = Category.values();
 
         List<Product> ps = new ArrayList<>();
@@ -65,7 +76,7 @@ public class DataSeeder implements ApplicationRunner {
                 p.getTags().add(tagPool[(i + 1) % 3]);
             ps.add(p);
         }
-        products.saveAll(ps); // Tag needs cascade PERSIST (or save tags via a TagRepository first)
+        products.saveAll(ps);
 
         OrderStatus[] statuses = OrderStatus.values();
         for (int i = 0; i < 30; i++) {

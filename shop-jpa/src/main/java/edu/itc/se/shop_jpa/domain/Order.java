@@ -29,7 +29,6 @@ public class Order {
     @Column(nullable = false)
     private long version;
 
-    @BatchSize(size = 16)
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderLine> lines = new ArrayList<>();
 

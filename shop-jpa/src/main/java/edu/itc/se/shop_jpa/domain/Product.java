@@ -29,6 +29,10 @@ public class Product {
     @Column(nullable = false)
     private int stock;
 
+    @Version
+    @Column(nullable = false)
+    private long version;
+
     @ManyToMany
     @JoinTable(
         name = "product_tag",
@@ -53,6 +57,7 @@ public class Product {
     public Money getPrice() { return price; }
     public Category getCategory() { return category; }
     public int getStock() { return stock; }
+    public long getVersion() { return version; }
     public Set<Tag> getTags() { return tags; }
 
     public void setName(String name) { this.name = name; }

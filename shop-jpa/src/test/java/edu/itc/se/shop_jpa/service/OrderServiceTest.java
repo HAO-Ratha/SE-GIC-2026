@@ -14,6 +14,7 @@ import edu.itc.se.shop_jpa.repository.ProductRepository;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.UUID;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,7 @@ class OrderServiceTest {
     }
 
     private Long createOrder() {
-        Customer customer = customers.save(new Customer("Ada Lovelace", "ada@itc.edu"));
+        Customer customer = customers.save(new Customer("Ada Lovelace", "ada-" + UUID.randomUUID() + "@itc.edu"));
 
         Product product = products.save(new Product(
                 "KB-1",

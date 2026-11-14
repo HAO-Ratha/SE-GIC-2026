@@ -31,7 +31,8 @@ public class TestData {
 
     @Transactional
     public void paidOrders(int count, int linesPerOrder) {
-        if (orders.countByStatus(OrderStatus.PAID) >= count) {
+        int ordersToCreate = count - Math.toIntExact(orders.countByStatus(OrderStatus.PAID));
+        if (ordersToCreate <= 0) {
             return;
         }
 
@@ -49,7 +50,7 @@ public class TestData {
             )));
         }
 
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < ordersToCreate; i++) {
             Order order = new Order(customer, OrderStatus.PAID, Instant.now().minusSeconds(i * 60L));
             for (int j = 0; j < linesPerOrder; j++) {
                 Product product = productPool.get((i + j) % productPool.size());
