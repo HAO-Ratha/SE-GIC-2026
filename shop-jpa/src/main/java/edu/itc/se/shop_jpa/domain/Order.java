@@ -51,5 +51,11 @@ public class Order {
         lines.add(new OrderLine(this, product, quantity, product.getPrice()));
     }
 
+    public void removeLine(OrderLine line) {
+        if (lines.remove(line)) {
+            line.setOrder(null);
+        }
+    }
+
     public void setStatus(OrderStatus status) { this.status = status; }
 }
